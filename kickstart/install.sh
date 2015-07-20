@@ -33,28 +33,34 @@ fi
 
 echo -e  "\e[31m Begining file config.....  \e[0m "
 sed -i 's/disable= yes/disable= no/' /etc/xinetd.d/tftp
+IP=`ifconfig   |grep -v 127| grep "inet addr" | awk '{print $2}'  | awk -F ":" '{print $2}'`
+IP_NET=`echo $IP | awk -F '.' '{print $1"."$2"."$3}'`
+
 cat > /etc/dhcp/dhcpd.conf <<EOF
-    # dhcpd.conf
-    #
-    # Sample configuration file for ISC dhcpd
-    #
-     
-    allow booting;
-    allow bootp;
-     
-    # A slightly different configuration for an internal subnet.
-    subnet 192.168.1.0 netmask 255.255.255.0 {
-    range 192.168.1.50 192.168.1.60;
-    option domain-name-servers localhost;
-    option domain-name "localhost";
-    option routers 192.168.1.1;
-    default-lease-time 600;
-    max-lease-time 7200;
-    filename "pxelinux.0";
-    next-server 192.168.1.101;
-    }
+# dhcpd.conf
+# Sample configuration file created by hanshengzhao
+ 
+allow booting;
+allow bootp;
+ 
+# A slightly different configuration for an internal subnet.
+subnet $IP_NET.0 netmask 255.255.255.0 {
+range $IP_NET.200 $IP_NET.230;
+option domain-name-servers localhost;
+option domain-name "localhost";
+option routers $IP_NET.1;
+default-lease-time 600;
+max-lease-time 7200;
+filename "pxelinux.0";
+next-server $IP;
+}
+EOF
 
-
+cp /usr/shard/syslinux/pxelinux.0 /var/lib/tftpboot
+mount  /dev/cdrom  /media/cdrom
+cp /media/cdrom/isolinux/*  /var/lib/tftpboot/
+cd /var/lib/tftpboot/;mkdir pxelinux.cfg;cd pxelinux.cfg
+cat >default<<EOF
 
 EOF
 
