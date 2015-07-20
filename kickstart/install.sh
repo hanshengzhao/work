@@ -61,6 +61,44 @@ mount  /dev/cdrom  /media/cdrom
 cp /media/cdrom/isolinux/*  /var/lib/tftpboot/
 cd /var/lib/tftpboot/;mkdir pxelinux.cfg;cd pxelinux.cfg
 cat >default<<EOF
+    default linux
+    #default vesamenu.c32
+    prompt 1
+    timeout 600
+     
+    display boot.msg
+     
+    menu background splash.jpg
+    menu title Welcome to CentOS 6.5!
+    menu color border 0 #ffffffff #00000000
+    menu color sel 7 #ffffffff #ff000000
+    menu color title 0 #ffffffff #00000000
+    menu color tabmsg 0 #ffffffff #00000000
+    menu color unsel 0 #ffffffff #00000000
+    menu color hotsel 0 #ff000000 #ffffffff
+    menu color hotkey 7 #ffffffff #ff000000
+    menu color scrollbar 0 #ffffffff #00000000
+     
+    label linux
+    menu label ^Install or upgrade an existing system
+    menu default
+    kernel vmlinuz
+    append initrd=initrd.img ks=ftp://192.168.1.101/pub/ks.cfg
+    label vesa
+    menu label Install system with ^basic video driver
+    kernel vmlinuz
+    append initrd=initrd.img xdriver=vesa nomodeset
+    label rescue
+    menu label ^Rescue installed system
+    kernel vmlinuz
+    append initrd=initrd.img rescue
+    label local
+    menu label Boot from ^local drive
+    localboot 0xffff
+    label memtest86
+    menu label ^Memory test
+    kernel memtest
+    append -
 
 EOF
 
