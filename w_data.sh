@@ -1,4 +1,6 @@
+# some change
 # this is a scripts  to write some thing into mongodb
+
 DB=$RANDOM
 TB=$RANDOM
 echo $DB
