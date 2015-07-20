@@ -4,13 +4,14 @@ if  [ ! -h /dev/cdrom  ];then
 echo "sorry ,the cdrom is not exist "
 exit 1
 fi
-
+mkdir -p /media/cdrom
 mount /dev/cdrom  /media/cdrom
 
 #		install  some software
 
 alias yumlocal="yum --disablerepo=\* --enablerepo=c6-media"	
-yumlocal  -y install  tree ftp sysstat nc perl-libxml-perl dos2unix ipmitool perl-Archive-Zip minicom lrzsz iotop telnet ant binutils compat-libstdc++-33 elfutils-libelf elfutils-libelf-devel gcc gcc-c++ glibc glibc-common glibc-devel glibc-headers libaio  libaio-devel libgcc   libstdc++ libstdc++-devel make sysstat unixODBC unixODBC-devel libXp gcc  bison  openssl-devel rpm-build speex ncurses-devel net-snmp net-snmp-devel net-snmp-libs net-snmp-utils  openssl098e-0.9.8e-17.el6.centos.2.x86_64 crypto-utils libcurl-devel libss libcmpiCppImpl0 libwsman1 openwsman-client sblim-sfcc sblim-sfcb openwsman-server
+yum --disablerepo=\* --enablerepo=c6-media  -y install  tree ftp sysstat nc perl-libxml-perl dos2unix ipmitool  minicom lrzsz iotop telnet ant binutils compat-libstdc++-33 elfutils-libelf elfutils-libelf-devel gcc gcc-c++ glibc glibc-common glibc-devel glibc-headers libaio  libaio-devel libgcc   libstdc++ libstdc++-devel make sysstat unixODBC unixODBC-devel libXp gcc  bison  openssl-devel rpm-build speex ncurses-devel net-snmp net-snmp-devel net-snmp-libs net-snmp-utils  openssl098e-0.9.8e-17.el6.centos.2.x86_64 crypto-utils libcurl-devel libss libcmpiCppImpl0 libwsman1 openwsman-client sblim-sfcc sblim-sfcb openwsman-server
+#yum --disablerepo=\* --enablerepo=c6-media  -y install  tree ftp sysstat nc perl-libxml-perl dos2unix ipmitool perl-Archive-Zip minicom lrzsz iotop telnet ant binutils compat-libstdc++-33 elfutils-libelf elfutils-libelf-devel gcc gcc-c++ glibc glibc-common glibc-devel glibc-headers libaio  libaio-devel libgcc   libstdc++ libstdc++-devel make sysstat unixODBC unixODBC-devel libXp gcc  bison  openssl-devel rpm-build speex ncurses-devel net-snmp net-snmp-devel net-snmp-libs net-snmp-utils  openssl098e-0.9.8e-17.el6.centos.2.x86_64 crypto-utils libcurl-devel libss libcmpiCppImpl0 libwsman1 openwsman-client sblim-sfcc sblim-sfcb openwsman-server
 
 
 #		chkconfig some server
@@ -96,7 +97,8 @@ if [ $? -ne 0 ];then
 exit
 fi
 unzip nagios.zip
-	tar zxf nagios-plugins-1.4.16.tar.gz && cd nagios-plugins-1.4.16 && ./configure --with-nagios-user=nagios --with-nagios-group=nagios --enable-perl-modules && make && make install && cd ../	
+cd nagios
+tar zxf nagios-plugins-1.4.16.tar.gz && cd nagios-plugins-1.4.16 && ./configure --with-nagios-user=nagios --with-nagios-group=nagios --enable-perl-modules && make && make install && cd ../	
 
 tar zxvf nrpe-2.12.tar.gz && cd nrpe-2.12 && ./configure && make all && make install-plugin && make install-daemon && make install-daemon-config && cd ..	
 tar zxvf Params-Validate-0.91.tar.gz && cd Params-Validate-0.91 && perl Makefile.PL && make && make install && cd ..	
@@ -149,7 +151,7 @@ echo "*/5 * * * * root /usr/sbin/lsof -n |wc -l > /usr/local/nagios/libexec/file
 
 echo "/etc/init.d/nrpe start" >> /etc/rc.local
 
-cat >> /etc/init.d/nrpe << CRM	
+cat > /etc/init.d/nrpe << EOF	
 #!/bin/bash	
 #20120406	
 case \${1} in 	
@@ -169,7 +171,8 @@ restart)
        echo  "Usage: \${0} {start|stop|restart}"	
 ;;	
 esac	
-CRM	
+EOF
+	
 chmod 755 /etc/init.d/nrpe	
 
 wget $D_path/iftop-1.0-0.1.pre2.el6.x86_64.rpm 
